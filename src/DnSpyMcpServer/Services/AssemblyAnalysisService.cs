@@ -55,7 +55,9 @@ internal sealed class AssemblyAnalysisService
     {
         var asm = GetOrLoad(assemblyPath);
         var type = FindType(asm.Module, typeFullName);
-        return asm.Decompiler.DecompileTypeAsString(new FullTypeName(type.ReflectionFullName));
+        var code = asm.Decompiler.DecompileTypeAsString(new FullTypeName(type.ReflectionFullName));
+
+        return $"// dnSpy location: TypeDef token {FormatToken(type.MDToken.Raw)}{Environment.NewLine}{code}";
     }
 
     public string DecompileMethod(string assemblyPath, string typeFullName, string methodName, string[]? parameterTypeNames)
@@ -65,7 +67,9 @@ internal sealed class AssemblyAnalysisService
         var method = FindMethod(type, methodName, parameterTypeNames);
 
         var handle = MetadataTokens.EntityHandle((int)method.MDToken.Raw);
-        return asm.Decompiler.DecompileAsString(new[] { handle });
+        var code = asm.Decompiler.DecompileAsString(new[] { handle });
+
+        return $"// dnSpy location: TypeDef {FormatToken(type.MDToken.Raw)}, MethodDef {FormatToken(method.MDToken.Raw)}{Environment.NewLine}{code}";
     }
 
     public string GetMethodIl(string assemblyPath, string typeFullName, string methodName, string[]? parameterTypeNames)
@@ -78,6 +82,7 @@ internal sealed class AssemblyAnalysisService
             return "Method has no IL body.";
 
         var sb = new StringBuilder();
+        sb.AppendLine($"dnSpy location: TypeDef {FormatToken(type.MDToken.Raw)}, MethodDef {FormatToken(method.MDToken.Raw)}");
         sb.AppendLine(RenderMethodSignature(method));
         foreach (var instruction in method.Body.Instructions)
         {
@@ -99,24 +104,33 @@ internal sealed class AssemblyAnalysisService
         foreach (var type in module.GetTypes().Where(t => !t.IsGlobalModuleType))
         {
             if (ContainsIgnoreCase(type.FullName, query))
-                results.Add($"type: {type.FullName}");
+                results.Add($"type: {type.FullName} | TypeDef={FormatToken(type.MDToken.Raw)}");
 
             foreach (var method in type.Methods)
             {
                 if (ContainsIgnoreCase(method.Name, query))
-                    results.Add($"method: {type.FullName}.{RenderMethodSignature(method)}");
+                {
+                    results.Add(
+                        $"method: {type.FullName}.{RenderMethodSignature(method)} | TypeDef={FormatToken(type.MDToken.Raw)} MethodDef={FormatToken(method.MDToken.Raw)}");
+                }
             }
 
             foreach (var field in type.Fields)
             {
                 if (ContainsIgnoreCase(field.Name, query))
-                    results.Add($"field: {type.FullName}.{field.Name}");
+                {
+                    results.Add(
+                        $"field: {type.FullName}.{field.Name} | TypeDef={FormatToken(type.MDToken.Raw)} FieldDef={FormatToken(field.MDToken.Raw)}");
+                }
             }
 
             foreach (var property in type.Properties)
             {
                 if (ContainsIgnoreCase(property.Name, query))
-                    results.Add($"property: {type.FullName}.{property.Name}");
+                {
+                    results.Add(
+                        $"property: {type.FullName}.{property.Name} | TypeDef={FormatToken(type.MDToken.Raw)} PropertyDef={FormatToken(property.MDToken.Raw)}");
+                }
             }
 
             if (results.Count >= maxResults)
@@ -154,7 +168,8 @@ internal sealed class AssemblyAnalysisService
                     if (!Contains(literal, text, caseSensitive))
                         continue;
 
-                    var match = $"{type.FullName}.{RenderMethodSignature(method)} | IL_{instruction.Offset:X4} | \"{literal}\"";
+                    var match =
+                        $"{type.FullName}.{RenderMethodSignature(method)} | TypeDef={FormatToken(type.MDToken.Raw)} MethodDef={FormatToken(method.MDToken.Raw)} | IL_{instruction.Offset:X4} | \"{literal}\"";
                     results.Add(match);
 
                     if (results.Count >= maxResults)
@@ -173,7 +188,7 @@ internal sealed class AssemblyAnalysisService
 
         var methods = type.Methods
             .Where(m => !m.IsGetter && !m.IsSetter && !m.IsAddOn && !m.IsRemoveOn)
-            .Select(RenderMethodSignature)
+            .Select(m => $"{RenderMethodSignature(m)} | MethodDef={FormatToken(m.MDToken.Raw)}")
             .OrderBy(m => m)
             .ToArray();
 
@@ -262,6 +277,8 @@ internal sealed class AssemblyAnalysisService
         var parameters = string.Join(", ", method.Parameters.Select(p => $"{p.Type.FullName} {p.Name}"));
         return $"{method.ReturnType.FullName} {method.Name}({parameters})";
     }
+
+    private static string FormatToken(uint raw) => $"0x{raw:X8}";
 
     private static string NormalizeTypeName(string typeName)
         => typeName.Replace(" ", string.Empty, StringComparison.Ordinal)

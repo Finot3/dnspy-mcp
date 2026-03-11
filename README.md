@@ -33,6 +33,9 @@ MCP server for .NET reverse engineering workflows (dnSpy/ILSpy ecosystem), built
 - `search_members`
 - `list_methods` (helper for overload signatures)
 - `find_string_references` (find string-literal references in IL)
+- `format_dnspy_jump` (turn tokens/IL offsets into direct dnSpy navigation steps)
+
+Navigation-friendly output: search/method/reference results include metadata tokens (`TypeDef`, `MethodDef`, etc.) so you can jump directly in dnSpy by token.
 
 All tools return:
 - `content` (text)
@@ -233,6 +236,16 @@ After restart, ask your client to call:
 ```
 
 Tip: also search fragments like `Pictures\\Screenshots` or just `Screenshot`.
+
+6. `format_dnspy_jump`
+```json
+{
+  "assemblyPath": "C:/Program Files (x86)/Cato Networks/Cato Client/CatoClient.exe",
+  "typeDefToken": "0x02000058",
+  "methodDefToken": "0x060005C1",
+  "ilOffset": "IL_01D2"
+}
+```
 
 ## Overload targeting example
 
